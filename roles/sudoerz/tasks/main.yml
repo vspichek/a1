@@ -1,0 +1,11 @@
+---
+- name: sodoers
+  with_dict: "{{ sodoers }}"
+  blockinfile:
+    dest: /tmp/sudoerss
+#    validate: 'visudo -cf %s'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: {{ item.key }}"
+    content: |
+      {% for entry in item.value %}
+      {{ entry }} ALL=(ALL) NOPASSWD:ALL
+      {% endfor %}

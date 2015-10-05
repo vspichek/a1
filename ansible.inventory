@@ -1,0 +1,3 @@
+localhost   ansible_connection=local
+c7
+rh6
