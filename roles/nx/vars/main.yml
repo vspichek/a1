@@ -1,1 +1,2 @@
 ---
+dist: "{% if ansible_os_family == 'RedHat' %}RHEL_{{ansible_distribution_major_version}}{% else %}{{ ansible_distribution ~ '_' ~ ansible_distribution_version }}{% endif %}"

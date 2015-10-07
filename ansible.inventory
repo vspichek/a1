@@ -1,3 +1,7 @@
-localhost   ansible_connection=local
-c7
-rh6
+localhost   ansible_connection=local hprompt=mac
+c7          me=vspichek
+rh6         me=vagrant hname=rh6
+
+[all:vars]
+ansible_ssh_user=ansible
+#ansible_ssh_extra_args="-o ClearAllForwardings=yes"

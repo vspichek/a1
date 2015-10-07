@@ -1,0 +1,8 @@
+---
+- name: ensure ruby is installed
+  become: true
+  yum: name=ruby
+
+- name: copy remote-textmate
+  become: true
+  copy: src=rmate dest=~{{me}}/bin/rmate mode=0775 owner={{me}} group={{me}}

@@ -1,1 +1,24 @@
 ---
+- name: incept ansible
+  hosts: "{{ target }}"
+  become: true
+  vars:
+    public_k: "{{ lookup('first_found', [ 'files/id_dsa.pub', 'files/id_rsa.pub' ]) }}"
+  pre_tasks:
+
+  - name: group for ansible
+    group: name=ansible
+
+  - name: user for ansible
+    user: name=ansible group=ansible append=yes
+
+  - name: public key for ansible
+    authorized_key: user=ansible exclusive=no key="{{ lookup( 'file', public_k ) }}"
+
+  roles:
+    - { role: sudoerz, sudoers: { ansible: [ansible] } }
+
+
+#ansible-playbook -e "target=c7" --become-method=su --ask-become-pass -e ansible_ssh_user=vspichek incept.yml
+#to override inventory: "-i c7,"
+#to list host matches --list-hosts

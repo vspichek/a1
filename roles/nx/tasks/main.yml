@@ -1,1 +1,47 @@
 ---
+- name: add yum NX repository
+  become: true
+  get_url: dest=/etc/yum.repos.d/x2go.repo url="http://download.opensuse.org/repositories/X11:/RemoteDesktop:/x2go/RHEL_6/X11:RemoteDesktop:x2go.repo"
+#  get_url: dest=/etc/yum.repos.d/x2go.repo url="http://download.opensuse.org/repositories/X11:/RemoteDesktop:/x2go/RHEL_{{ansible_distribution_major_version}}/X11:RemoteDesktop:x2go.repo"
+  when: ansible_os_family == 'RedHat'
+
+- name: disable yum NX repository
+  become: true
+  replace: dest=/etc/yum.repos.d/x2go.repo regexp="^enabled.*$" replace="enabled=0"
+  when: ansible_os_family == 'RedHat'
+
+- name: add zypper NX repository
+  become: true
+  zypper_repository: name=x2go-repo repo="http://download.opensuse.org/repositories/X11:/RemoteDesktop:/x2go/openSUSE_{{ansible_distribution_version}}/X11:RemoteDesktop:x2go.repo"
+  when: ansible_os_family == 'Suse'
+
+- name: NX packages
+  become: true
+  yum: name={{item}} enablerepo=X11_RemoteDesktop_x2go
+  with_items: [ "nxproxy", "nxagent" ]
+  when: ansible_os_family == 'RedHat'
+
+- name: NX packages
+  become: true
+  zypper: name={{item}}
+  with_items: [ "nxproxy", "nxagent" ]
+  when: ansible_os_family == 'Suse'
+
+- name: check for nxclient
+  shell: rpm -q nxclient
+  register: rpm_q
+  ignore_errors: true
+  always_run: true
+
+- name: copy nxclient
+  copy: src=nxclient-3.5.0-7.x86_64.rpm dest=/tmp/nxclient-3.5.0-7.x86_64.rpm
+  when: "rpm_q.rc != 0"
+
+- name: install nxclient
+  become: true
+  shell: rpm -i /tmp/nxclient-3.5.0-7.x86_64.rpm
+  when: "rpm_q.rc != 0"
+
+- name: delete nxclient
+  file: dest=/tmp/nxclient-3.5.0-7.x86_64.rpm state=absent
+  when: "rpm_q.rc != 0"

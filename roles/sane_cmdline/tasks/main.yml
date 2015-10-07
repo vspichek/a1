@@ -1,1 +1,25 @@
 ---
+- name: bash history omit on space
+  become: true
+  lineinfile: dest=/etc/bashrc line="export HISTCONTROL=ignorespace"
+  when: not ("ignoreboth" == "{{ ansible_env.HISTCONTROL|default("absent") }}")
+
+- name: brief prompt
+  become: true
+  lineinfile: dest=/etc/bashrc line="PS1='@{{hname|default(hprompt|default(ansible_hostname))}}:{{''}} \W\$ '" regexp="^PS1="
+
+- name: screen fixes
+  become: true
+  when: me is defined
+  blockinfile:
+    dest: /home/{{me}}/.screenrc
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: screen fixes"
+    content: |
+      startup_message off
+      defscrollback 5000
+      termcapinfo xterm* ti@:te@
+
+- name: echo-control-characters fix
+  become: true
+  lineinfile: dest=/etc/inputrc line="set echo-control-characters off" regexp="^set echo-control-characters"

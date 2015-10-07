@@ -1,3 +1,9 @@
 ---
-- hosts: all
-  roles: [sane_cmdline]
+- name: sudo
+  hosts: "{{ target }}"
+  become: true
+  roles:
+  - sane_cmdline
+  - remote-textmate-server
+
+#ansible-playbook -e "target=c7" sane_cmdline.yml

@@ -1,6 +1,7 @@
 ---
-- hosts: all
+- name: cmdline
+  hosts: "{{ target }}"
   roles:
-    - { role: sudoerz, sudoers: { me: [me] } }
+    - { role: sudoerz, sudoers: { me: ["{{ me }}"] } }
 
-#ansible-playbook --extra-vars="target=c7" -i c7, -b --become-method=su --ask-become-pass --list-hosts my_sudo.yml
+#ansible-playbook -e "target=c7" my_sudo.yml
